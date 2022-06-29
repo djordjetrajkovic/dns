@@ -1,0 +1,58 @@
+key "atkey" {
+ 	algorithm hmac-md5;
+ 	secret "PqPc9n5htM8TPGAo5/41CMtx7/iaSnXMesNcxyAU72c=";
+};
+
+controls {
+	inet 127.0.0.1 allow { 127.0.0.1; } keys { atkey; };
+};
+
+view "internal" {
+	
+	match-clients { 10.10.1.0/24; };
+	recursion no;
+
+	//include "infrastructure.zones";
+
+	zone "atrust.com" {
+		type master;
+		file "internal/atrust.com";
+	};
+	
+	zone "1.10.10.in-addr.arpa" {
+		type master;
+		file "insternal/10.10.1.rev";
+		allow-update { none; };
+	};
+	
+	//include "/etc/bind/named.conf.default-zones";
+
+	//include "internal/tmark.zones";
+};
+
+view "world" {
+	
+	match-clients { any; };
+	recursion no;
+
+	zone "atrust.com" {
+		type master;
+		file "world/atrust.com";
+		allow-update { none; };
+	};
+
+	zone "122.168.192.in-addr.arpa" {
+		type master;
+		file "world/192.168.122.rev";
+		allow-update { none; };
+	};
+
+	zone "admin.com" {
+		type master;
+		file "world/admin.com";
+		allow-update { none; };
+	};
+
+	include "/etc/bind/named.conf.default-zones";
+
+};
